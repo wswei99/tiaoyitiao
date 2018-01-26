@@ -1,0 +1,41 @@
+{
+  "engineVersion": "5.1.2",
+  "compilerVersion": "5.1.2",
+  "target": {
+    "current": "wxgame"
+  },
+  "template": {},
+  "eui": {
+    "exmlRoot": [
+      "resource/eui_skins"
+    ],
+    "themes": [
+      "resource/default.thm.json"
+    ],
+    "exmlPublishPolicy": "commonjs"
+  },
+  "modules": [
+    {
+      "name": "egret"
+    },
+    {
+      "name": "eui"
+    },
+    {
+      "name": "assetsmanager"
+    },
+    {
+      "name": "tween"
+    },
+    {
+      "name": "game"
+    },
+    {
+      "name": "promise"
+    },
+		{
+			"name": "physics",
+			"path": "../physics"
+		}
+  ]
+}

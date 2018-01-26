@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="GameSceneSkin" width="640" height="1136" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" >
+	<w:Config id="160e325f0a9" ></w:Config>
+	<e:Group id="blockPanel" anchorOffsetX="0" anchorOffsetY="0" touchThrough="false" left="0" top="0" right="0" bottom="0" touchChildren="false" touchEnabled="false">
+		<e:Image id="bg" left="0" top="0" bottom="0" right="0" source="bg_jpg" touchEnabled="true" x="0" y="0" scaleX="1" scaleY="1"/>
+		<e:Image id="player" width="48" height="130" x="220" y="568" source="piece_png"/>
+		<e:Label id="scoreLabel" text="0" size="90" textColor="0x0a0202" left="100" top="100"/>
+	</e:Group>
+	<e:Group id="overPanel" left="0" top="0" right="0" bottom="0" visible="false">
+		<e:Rect left="0" top="0" right="0" bottom="0" fillAlpha="0.6"/>
+		<e:Label text="本次得分" horizontalCenter="0" top="200" height="50" size="30"/>
+		<e:Label id="overScoreLabel" text="20" horizontalCenter="0" top="250" height="90" size="90"/>
+		<e:Button id="restart" label="" horizontalCenter="0" bottom="200">
+		<e:skinName>
+			<e:Skin states="up,down,disabled">
+			<e:Image width="100%" height="100%" source="restart_btn_png"/>
+			<e:Label id="labelDisplay" horizontalCenter="0" verticalCenter="0"/>
+			</e:Skin>
+		</e:skinName>
+		</e:Button>
+	</e:Group>
+</e:Skin>
