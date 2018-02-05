@@ -2573,7 +2573,9 @@ var eui;
             if (target || this.$Group[5 /* touchThrough */]) {
                 return target;
             }
-            if (!this.$visible || !this.touchEnabled) {
+            //Bug: 当 group.sacleX or scaleY ==0 的时候，随便点击那里都点击成功
+            //虽然 super.$hitTest里面检测过一次 宽高大小，但是没有直接退出这个函数，所以要再判断一次;（width,height可以不判断）
+            if (!this.$visible || !this.touchEnabled || this.scaleX === 0 || this.scaleY === 0 || this.width === 0 || this.height === 0) {
                 return null;
             }
             var point = this.globalToLocal(stageX, stageY, egret.$TempPoint);
@@ -4549,7 +4551,7 @@ var eui;
          */
         DataGroup.prototype.measureRendererSize = function () {
             var values = this.$DataGroup;
-            if (!values[12 /* typicalItem */]) {
+            if (values[12 /* typicalItem */] == undefined) {
                 this.setTypicalLayoutRect(null);
                 return;
             }
@@ -10416,8 +10418,7 @@ var eui;
                 return this.$scale9Grid;
             },
             set: function (value) {
-                this.$scale9Grid = value;
-                this.$renderDirty = true;
+                this.$setScale9Grid(value);
                 this.invalidateDisplayList();
             },
             enumerable: true,
@@ -10572,36 +10573,6 @@ var eui;
             }
         };
         /**
-         * @private
-         *
-         * @param context
-         */
-        Image.prototype.$updateRenderNode = function () {
-            var image = this.$bitmapData;
-            if (!image) {
-                return;
-            }
-            var uiValues = this.$UIComponent;
-            var width = uiValues[10 /* width */];
-            var height = uiValues[11 /* height */];
-            if (width === 0 || height === 0) {
-                return;
-            }
-            var scale9Grid = this.scale9Grid || this.$texture["scale9Grid"];
-            if (scale9Grid) {
-                if (this.$renderNode instanceof egret.sys.NormalBitmapNode) {
-                    this.$renderNode = new egret.sys.BitmapNode();
-                }
-                egret.sys.BitmapNode.$updateTextureDataWithScale9Grid(this.$renderNode, this.$bitmapData, scale9Grid, this.$bitmapX, this.$bitmapY, this.$bitmapWidth, this.$bitmapHeight, this.$offsetX, this.$offsetY, this.$textureWidth, this.$textureHeight, width, height, this.$sourceWidth, this.$sourceHeight, this.$smoothing);
-            }
-            else {
-                if (this.fillMode == egret.BitmapFillMode.REPEAT && this.$renderNode instanceof egret.sys.NormalBitmapNode) {
-                    this.$renderNode = new egret.sys.BitmapNode();
-                }
-                egret.sys.BitmapNode.$updateTextureData(this.$renderNode, this.$bitmapData, this.$bitmapX, this.$bitmapY, this.$bitmapWidth, this.$bitmapHeight, this.$offsetX, this.$offsetY, this.$textureWidth, this.$textureHeight, width, height, this.$sourceWidth, this.$sourceHeight, this.$fillMode, this.$smoothing);
-            }
-        };
-        /**
          * @copy eui.UIComponent#createChildren
          *
          * @version Egret 2.4
@@ -10612,6 +10583,16 @@ var eui;
             if (this.sourceChanged) {
                 this.parseSource();
             }
+        };
+        /**
+         * @private
+         * 设置组件的宽高。此方法不同于直接设置width,height属性，
+         * 不会影响显式标记尺寸属性
+         */
+        Image.prototype.setActualSize = function (w, h) {
+            eui.sys.UIComponentImpl.prototype["setActualSize"].call(this, w, h);
+            _super.prototype.$setWidth.call(this, w);
+            _super.prototype.$setHeight.call(this, h);
         };
         /**
          * @copy eui.UIComponent#childrenCreated
@@ -13677,6 +13658,9 @@ var eui;
             _this.fillColor = fillColor;
             return _this;
         }
+        Rect.prototype.createNativeDisplayObject = function () {
+            this.$nativeDisplayObject = new egret_native.NativeDisplayObject(8 /* GRAPHICS */);
+        };
         Object.defineProperty(Rect.prototype, "graphics", {
             get: function () {
                 return this.$graphics;
@@ -20761,8 +20745,8 @@ var eui;
         /**
          * @private
          */
-        BitmapLabel.prototype.$invalidateBitmapText = function () {
-            _super.prototype.$invalidateBitmapText.call(this);
+        BitmapLabel.prototype.$invalidateContentBounds = function () {
+            _super.prototype.$invalidateContentBounds.call(this);
             this.invalidateSize();
         };
         /**
@@ -20796,18 +20780,17 @@ var eui;
             return result;
         };
         BitmapLabel.prototype.$setFont = function (value) {
-            var values = this.$BitmapText;
-            if (this.$font == value) {
+            if (this.$fontForBitmapLabel == value) {
                 return false;
             }
-            this.$font = value;
+            this.$fontForBitmapLabel = value;
             if (this.$createChildrenCalled) {
                 this.$parseFont();
             }
             else {
                 this.$fontChanged = true;
             }
-            this.$BitmapText[6 /* fontStringChanged */] = true;
+            this.$fontStringChanged = true;
             return true;
         };
         /**
@@ -20816,22 +20799,25 @@ var eui;
         BitmapLabel.prototype.$parseFont = function () {
             var _this = this;
             this.$fontChanged = false;
-            var font = this.$font;
+            var font = this.$fontForBitmapLabel;
             if (typeof font == "string") {
                 eui.getAssets(font, function (bitmapFont) {
-                    _this.$setFontData(bitmapFont);
+                    _this.$setFontData(bitmapFont, font);
                 });
             }
             else {
                 this.$setFontData(font);
             }
         };
-        BitmapLabel.prototype.$setFontData = function (value) {
-            if (value == this.$BitmapText[5 /* font */]) {
+        BitmapLabel.prototype.$setFontData = function (value, font) {
+            if (font && font != this.$fontForBitmapLabel) {
+                return;
+            }
+            if (value == this.$font) {
                 return false;
             }
-            this.$BitmapText[5 /* font */] = value;
-            this.$invalidateBitmapText();
+            this.$font = value;
+            this.$invalidateContentBounds();
             return true;
         };
         /**
@@ -20874,9 +20860,8 @@ var eui;
          */
         BitmapLabel.prototype.measure = function () {
             var values = this.$UIComponent;
-            var textValues = this.$BitmapText;
-            var oldWidth = textValues[0 /* textFieldWidth */];
-            var oldHeight = textValues[1 /* textFieldHeight */];
+            var oldWidth = this.$textFieldWidth;
+            var oldHeight = this.$textFieldHeight;
             var availableWidth = NaN;
             if (!isNaN(this._widthConstraint)) {
                 availableWidth = this._widthConstraint;

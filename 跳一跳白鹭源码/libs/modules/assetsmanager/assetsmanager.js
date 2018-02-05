@@ -1,10 +1,12 @@
-function __extends(d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() {
-        this.constructor = d;
-    }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+var __reflect = (this && this.__reflect) || function (p, c, t) {
+    p.__class__ = c, t ? t.push(c) : t = [c], p.__types__ = p.__types__ ? t.concat(p.__types__) : t;
+};
+var __extends = this && this.__extends || function __extends(t, e) { 
+ function r() { 
+ this.constructor = t;
+}
+for (var i in e) e.hasOwnProperty(i) && (t[i] = e[i]);
+r.prototype = e.prototype, t.prototype = new r();
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,8 +17,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function () { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function () { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -47,92 +49,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var RES;
-(function (RES) {
-    var NewFileSystem = (function () {
-        function NewFileSystem(data) {
-            this.data = data;
-        }
-        NewFileSystem.prototype.profile = function () {
-            console.log(this.data);
-        };
-        NewFileSystem.prototype.addFile = function (filename, type) {
-            if (!type)
-                type = "";
-            filename = this.normalize(filename);
-            var basefilename = this.basename(filename);
-            var folder = this.dirname(filename);
-            if (!this.exists(folder)) {
-                this.mkdir(folder);
-            }
-            var d = this.reslove(folder);
-            d[basefilename] = { url: filename, type: type };
-        };
-        NewFileSystem.prototype.getFile = function (filename) {
-            var result = this.reslove(filename);
-            if (result) {
-                result.name = filename;
-            }
-            return result;
-        };
-        NewFileSystem.prototype.basename = function (filename) {
-            return filename.substr(filename.lastIndexOf("/") + 1);
-        };
-        NewFileSystem.prototype.normalize = function (filename) {
-            return filename.split("/").filter(function (d) { return !!d; }).join("/");
-        };
-        NewFileSystem.prototype.dirname = function (path) {
-            return path.substr(0, path.lastIndexOf("/"));
-        };
-        NewFileSystem.prototype.reslove = function (dirpath) {
-            if (dirpath == "") {
-                return this.data;
-            }
-            dirpath = this.normalize(dirpath);
-            var list = dirpath.split("/");
-            var current = this.data;
-            for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
-                var f = list_1[_i];
-                if (current) {
-                    current = current[f];
-                }
-                else {
-                    return current;
-                }
-            }
-            return current;
-        };
-        NewFileSystem.prototype.mkdir = function (dirpath) {
-            dirpath = this.normalize(dirpath);
-            var list = dirpath.split("/");
-            var current = this.data;
-            for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
-                var f = list_2[_i];
-                if (!current[f]) {
-                    current[f] = {};
-                }
-                current = current[f];
-            }
-        };
-        NewFileSystem.prototype.exists = function (dirpath) {
-            if (dirpath == "")
-                return true;
-            dirpath = this.normalize(dirpath);
-            var list = dirpath.split("/");
-            var current = this.data;
-            for (var _i = 0, list_3 = list; _i < list_3.length; _i++) {
-                var f = list_3[_i];
-                if (!current[f]) {
-                    return false;
-                }
-                current = current[f];
-            }
-            return true;
-        };
-        return NewFileSystem;
-    }());
-    RES.NewFileSystem = NewFileSystem;
-})(RES || (RES = {}));
 var RES;
 (function (RES) {
     RES.resourceNameSelector = function (p) { return p; };
@@ -170,7 +86,7 @@ var RES;
             var _this = this;
             if (!this.config) {
                 this.config = {
-                    alias: {}, groups: {}, resourceRoot: "resource",
+                    alias: {}, groups: {}, resourceRoot: this.resourceRoot,
                     typeSelector: function () { return 'unknown'; }, mergeSelector: null,
                     fileSystem: null
                 };
@@ -347,7 +263,7 @@ var RES;
          * @param folder {string} 加载项的路径前缀。
          */
         ResourceConfig.prototype.parseConfig = function (data) {
-            RES.resourceRoot = data.resourceRoot + "/";
+            RES.resourceRoot = data.resourceRoot;
             this.config = data;
             RES.fileSystem = data.fileSystem;
             // if (!data)
@@ -431,6 +347,7 @@ var RES;
         return ResourceConfig;
     }());
     RES.ResourceConfig = ResourceConfig;
+    __reflect(ResourceConfig.prototype, "RES.ResourceConfig");
 })(RES || (RES = {}));
 //////////////////////////////////////////////////////////////////////////////////////
 //
@@ -469,26 +386,217 @@ var RES;
      */
     var ResourceLoader = (function () {
         function ResourceLoader() {
+            /**
+             * 当前组加载的项总个数,key为groupName
+             */
+            this.groupTotalDic = {};
+            /**
+             * 已经加载的项个数,key为groupName
+             */
+            this.numLoadedDic = {};
+            /**
+             * 正在加载的组列表,key为groupName
+             */
+            this.itemListDic = {};
+            /**
+             * 加载失败的组,key为groupName
+             */
+            this.groupErrorDic = {};
+            this.retryTimesDic = {};
+            this.maxRetryTimes = 3;
+            /**
+             * 优先级队列,key为priority，value为groupName列表
+             */
+            this.priorityQueue = {};
+            this.reporterDic = {};
+            this.dispatcherDic = {};
+            this.failedList = new Array();
+            this.loadItemErrorDic = {};
+            this.errorDic = {};
+            this.loadingCount = 0;
+            this.thread = 4;
+            this.queueIndex = 0;
         }
-        ResourceLoader.prototype.load = function (list, reporter) {
+        ResourceLoader.prototype.load = function (list, groupName, priority, reporter) {
+            var total = list.length;
+            for (var i = 0; i < total; i++) {
+                var resInfo = list[i];
+                if (!resInfo.groupNames) {
+                    resInfo.groupNames = [];
+                }
+                resInfo.groupNames.push(groupName);
+            }
+            this.itemListDic[groupName] = list;
+            this.groupTotalDic[groupName] = list.length;
+            this.numLoadedDic[groupName] = 0;
+            if (this.priorityQueue[priority])
+                this.priorityQueue[priority].push(groupName);
+            else
+                this.priorityQueue[priority] = [groupName];
+            this.reporterDic[groupName] = reporter;
+            var dispatcher = new egret.EventDispatcher();
+            this.dispatcherDic[groupName] = dispatcher;
+            var promise = new Promise(function (reslove, reject) {
+                dispatcher.addEventListener("complete", reslove, null);
+                dispatcher.addEventListener("error", function (e) {
+                    reject(e.data);
+                }, null);
+            });
+            this.next();
+            return promise;
+        };
+        ResourceLoader.prototype.next = function () {
             var _this = this;
-            var current = 0;
-            var total = 1;
-            var mapper = function (r) {
-                return _this.loadResource(r)
+            var _loop_1 = function () {
+                var r = this_1.getOneResourceInfo();
+                if (!r)
+                    return "break";
+                this_1.loadingCount++;
+                this_1.loadResource(r)
                     .then(function (response) {
-                        RES.host.save(r, response);
-                        current++;
+                    _this.loadingCount--;
+                    RES.host.save(r, response);
+                    var groupName = r.groupNames.shift();
+                    if (r.groupNames.length == 0) {
+                        r.groupNames = undefined;
+                    }
+                    var reporter = _this.reporterDic[groupName];
+                    _this.numLoadedDic[groupName]++;
+                    var current = _this.numLoadedDic[groupName];
+                    var total = _this.groupTotalDic[groupName];
+                    if (reporter && reporter.onProgress) {
+                        reporter.onProgress(current, total);
+                    }
+                    if (current == total) {
+                        var groupError = _this.groupErrorDic[groupName];
+                        _this.removeGroupName(groupName);
+                        delete _this.groupTotalDic[groupName];
+                        delete _this.numLoadedDic[groupName];
+                        delete _this.itemListDic[groupName];
+                        delete _this.groupErrorDic[groupName];
+                        var dispatcher = _this.dispatcherDic[groupName];
+                        if (groupError) {
+                            var itemList = _this.loadItemErrorDic[groupName];
+                            delete _this.loadItemErrorDic[groupName];
+                            var error = _this.errorDic[groupName];
+                            delete _this.errorDic[groupName];
+                            dispatcher.dispatchEventWith("error", false, { itemList: itemList, error: error });
+                        }
+                        else {
+                            dispatcher.dispatchEventWith("complete");
+                        }
+                    }
+                    _this.next();
+                }).catch(function (error) {
+                    _this.loadingCount--;
+                    delete RES.host.state[r.name];
+                    var times = _this.retryTimesDic[r.name] || 1;
+                    if (times > _this.maxRetryTimes) {
+                        delete _this.retryTimesDic[r.name];
+                        var groupName = r.groupNames.shift();
+                        if (r.groupNames.length == 0) {
+                            delete r.groupNames;
+                        }
+                        if (!_this.loadItemErrorDic[groupName]) {
+                            _this.loadItemErrorDic[groupName] = [];
+                        }
+                        if (_this.loadItemErrorDic[groupName].indexOf(r) == -1) {
+                            _this.loadItemErrorDic[groupName].push(r);
+                        }
+                        _this.groupErrorDic[groupName] = true;
+                        var reporter = _this.reporterDic[groupName];
+                        _this.numLoadedDic[groupName]++;
+                        var current = _this.numLoadedDic[groupName];
+                        var total = _this.groupTotalDic[groupName];
                         if (reporter && reporter.onProgress) {
                             reporter.onProgress(current, total);
                         }
-                        return response;
-                    });
+                        if (current == total) {
+                            var groupError = _this.groupErrorDic[groupName];
+                            _this.removeGroupName(groupName);
+                            delete _this.groupTotalDic[groupName];
+                            delete _this.numLoadedDic[groupName];
+                            delete _this.itemListDic[groupName];
+                            delete _this.groupErrorDic[groupName];
+                            var itemList = _this.loadItemErrorDic[groupName];
+                            delete _this.loadItemErrorDic[groupName];
+                            var dispatcher = _this.dispatcherDic[groupName];
+                            dispatcher.dispatchEventWith("error", false, { itemList: itemList, error: error });
+                        }
+                        else {
+                            _this.errorDic[groupName] = error;
+                        }
+                        _this.next();
+                    }
+                    else {
+                        _this.retryTimesDic[r.name] = times + 1;
+                        _this.failedList.push(r);
+                        _this.next();
+                        return;
+                    }
+                });
             };
-            total = list.length;
-            return Promise.all(list.map(mapper));
+            var this_1 = this;
+            while (this.loadingCount < this.thread) {
+                var state_1 = _loop_1();
+                if (state_1 === "break")
+                    break;
+            }
         };
-        ;
+        /**
+         * 从优先级队列中移除指定的组名
+         */
+        ResourceLoader.prototype.removeGroupName = function (groupName) {
+            for (var p in this.priorityQueue) {
+                var queue_1 = this.priorityQueue[p];
+                var index = 0;
+                var found = false;
+                var length_1 = queue_1.length;
+                for (var i = 0; i < length_1; i++) {
+                    var name_1 = queue_1[i];
+                    if (name_1 == groupName) {
+                        queue_1.splice(index, 1);
+                        found = true;
+                        break;
+                    }
+                    index++;
+                }
+                if (found) {
+                    if (queue_1.length == 0) {
+                        delete this.priorityQueue[p];
+                    }
+                    break;
+                }
+            }
+        };
+        /**
+         * 获取下一个待加载项
+         */
+        ResourceLoader.prototype.getOneResourceInfo = function () {
+            if (this.failedList.length > 0)
+                return this.failedList.shift();
+            var maxPriority = Number.NEGATIVE_INFINITY;
+            for (var p in this.priorityQueue) {
+                maxPriority = Math.max(maxPriority, p);
+            }
+            var queue = this.priorityQueue[maxPriority];
+            if (!queue || queue.length == 0) {
+                return undefined;
+            }
+            var length = queue.length;
+            var list = [];
+            for (var i = 0; i < length; i++) {
+                if (this.queueIndex >= length)
+                    this.queueIndex = 0;
+                list = this.itemListDic[queue[this.queueIndex]];
+                if (list.length > 0)
+                    break;
+                this.queueIndex++;
+            }
+            if (list.length == 0)
+                return undefined;
+            return list.shift();
+        };
         ResourceLoader.prototype.loadResource = function (r, p) {
             if (!p) {
                 if (RES.FEATURE_FLAG.FIX_DUPLICATE_LOAD == 1) {
@@ -530,6 +638,7 @@ var RES;
         return ResourceLoader;
     }());
     RES.ResourceLoader = ResourceLoader;
+    __reflect(ResourceLoader.prototype, "RES.ResourceLoader");
 })(RES || (RES = {}));
 var RES;
 (function (RES) {
@@ -576,7 +685,10 @@ var RES;
         get resourceConfig() {
             return RES.config;
         },
-        load: function (r, processor) { return RES.queue.loadResource(r, processor); },
+        load: function (r, processorName) {
+            var processor = typeof processorName == 'string' ? RES.processor._map[processorName] : processorName;
+            return RES.queue.loadResource(r, processor);
+        },
         unload: function (r) { return RES.queue.unloadResource(r); },
         save: function (resource, data) {
             RES.host.state[resource.name] = 2;
@@ -606,31 +718,153 @@ var RES;
             _this.message = ResourceManagerError.errorMessage[code].replace("{0}", replacer).replace("{1}", replacer2);
             return _this;
         }
+        ResourceManagerError.errorMessage = {
+            1001: '文件加载失败:{0}',
+            1002: "ResourceManager 初始化失败：配置文件加载失败",
+            1005: 'ResourceManager 已被销毁，文件加载失败:{0}',
+            2001: "{0}解析失败,不支持指定解析类型:\'{1}\'，请编写自定义 Processor ，更多内容请参见 https://github.com/egret-labs/resourcemanager/blob/master/docs/README.md#processor",
+            2002: "Analyzer 相关API 在 ResourceManager 中不再支持，请编写自定义 Processor ，更多内容请参见 https://github.com/egret-labs/resourcemanager/blob/master/docs/README.md#processor",
+            2003: "{0}解析失败,错误原因:{1}",
+            2004: "无法找到文件类型:{0}",
+            2005: "资源配置文件中无法找到特定的资源组:{0}",
+            2006: "资源配置文件中无法找到特定的资源:{0}"
+        };
         return ResourceManagerError;
     }(Error));
-    ResourceManagerError.errorMessage = {
-        1001: '文件加载失败:{0}',
-        1002: "ResourceManager 初始化失败：配置文件加载失败",
-        1005: 'ResourceManager 已被销毁，文件加载失败:{0}',
-        2001: "{0}解析失败,不支持指定解析类型:\'{1}\'，请编写自定义 Processor ，更多内容请参见 https://github.com/egret-labs/resourcemanager/blob/master/docs/README.md#processor",
-        2002: "Analyzer 相关API 在 ResourceManager 中不再支持，请编写自定义 Processor ，更多内容请参见 https://github.com/egret-labs/resourcemanager/blob/master/docs/README.md#processor",
-        2003: "{0}解析失败,错误原因:{1}",
-        2004: "无法找到文件类型:{0}",
-        2005: "资源配置文件中无法找到特定的资源组:{0}",
-        2006: "资源配置文件中无法找到特定的资源:{0}"
-    };
     RES.ResourceManagerError = ResourceManagerError;
+    __reflect(ResourceManagerError.prototype, "RES.ResourceManagerError");
+})(RES || (RES = {}));
+var RES;
+(function (RES) {
+    RES.checkNull = function (target, propertyKey, descriptor) {
+        var method = descriptor.value;
+        descriptor.value = function () {
+            var arg = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                arg[_i] = arguments[_i];
+            }
+            if (!arg[0]) {
+                console.warn("\u65B9\u6CD5" + propertyKey + "\u7684\u53C2\u6570\u4E0D\u80FD\u4E3Anull");
+                return null;
+            }
+            else {
+                return method.apply(this, arg);
+            }
+        };
+    };
+    /**
+     * 功能开关
+     *  LOADING_STATE：处理重复加载
+     */
+    RES.FEATURE_FLAG = {
+        FIX_DUPLICATE_LOAD: 1
+    };
+    var upgrade;
+    (function (upgrade) {
+        var _level = "warning";
+        function setUpgradeGuideLevel(level) {
+            _level = level;
+        }
+        upgrade.setUpgradeGuideLevel = setUpgradeGuideLevel;
+    })(upgrade = RES.upgrade || (RES.upgrade = {}));
+})(RES || (RES = {}));
+var RES;
+(function (RES) {
+    var NewFileSystem = (function () {
+        function NewFileSystem(data) {
+            this.data = data;
+        }
+        NewFileSystem.prototype.profile = function () {
+            console.log(this.data);
+        };
+        NewFileSystem.prototype.addFile = function (filename, type) {
+            if (!type)
+                type = "";
+            filename = this.normalize(filename);
+            var basefilename = this.basename(filename);
+            var folder = this.dirname(filename);
+            if (!this.exists(folder)) {
+                this.mkdir(folder);
+            }
+            var d = this.reslove(folder);
+            d[basefilename] = { url: filename, type: type };
+        };
+        NewFileSystem.prototype.getFile = function (filename) {
+            var result = this.reslove(filename);
+            if (result) {
+                result.name = filename;
+            }
+            return result;
+        };
+        NewFileSystem.prototype.basename = function (filename) {
+            return filename.substr(filename.lastIndexOf("/") + 1);
+        };
+        NewFileSystem.prototype.normalize = function (filename) {
+            return filename.split("/").filter(function (d) { return !!d; }).join("/");
+        };
+        NewFileSystem.prototype.dirname = function (path) {
+            return path.substr(0, path.lastIndexOf("/"));
+        };
+        NewFileSystem.prototype.reslove = function (dirpath) {
+            if (dirpath == "") {
+                return this.data;
+            }
+            dirpath = this.normalize(dirpath);
+            var list = dirpath.split("/");
+            var current = this.data;
+            for (var _i = 0, list_1 = list; _i < list_1.length; _i++) {
+                var f = list_1[_i];
+                if (current) {
+                    current = current[f];
+                }
+                else {
+                    return current;
+                }
+            }
+            return current;
+        };
+        NewFileSystem.prototype.mkdir = function (dirpath) {
+            dirpath = this.normalize(dirpath);
+            var list = dirpath.split("/");
+            var current = this.data;
+            for (var _i = 0, list_2 = list; _i < list_2.length; _i++) {
+                var f = list_2[_i];
+                if (!current[f]) {
+                    current[f] = {};
+                }
+                current = current[f];
+            }
+        };
+        NewFileSystem.prototype.exists = function (dirpath) {
+            if (dirpath == "")
+                return true;
+            dirpath = this.normalize(dirpath);
+            var list = dirpath.split("/");
+            var current = this.data;
+            for (var _i = 0, list_3 = list; _i < list_3.length; _i++) {
+                var f = list_3[_i];
+                if (!current[f]) {
+                    return false;
+                }
+                current = current[f];
+            }
+            return true;
+        };
+        return NewFileSystem;
+    }());
+    RES.NewFileSystem = NewFileSystem;
+    __reflect(NewFileSystem.prototype, "RES.NewFileSystem");
 })(RES || (RES = {}));
 var RES;
 (function (RES) {
     var processor;
     (function (processor_1) {
         function isSupport(resource) {
-            return _map[resource.type];
+            return processor_1._map[resource.type];
         }
         processor_1.isSupport = isSupport;
         function map(type, processor) {
-            _map[type] = processor;
+            processor_1._map[type] = processor;
         }
         processor_1.map = map;
         function promisify(loader, resource) {
@@ -638,21 +872,24 @@ var RES;
                 var _this = this;
                 return __generator(this, function (_a) {
                     return [2 /*return*/, new Promise(function (reslove, reject) {
-                        var onSuccess = function () {
-                            var texture = loader['data'] ? loader['data'] : loader['response'];
-                            reslove(texture);
-                        };
-                        var onError = function () {
-                            var e = new RES.ResourceManagerError(1001, resource.url);
-                            reject(e);
-                        };
-                        loader.addEventListener(egret.Event.COMPLETE, onSuccess, _this);
-                        loader.addEventListener(egret.IOErrorEvent.IO_ERROR, onError, _this);
-                    })];
+                            var onSuccess = function () {
+                                var texture = loader['data'] ? loader['data'] : loader['response'];
+                                reslove(texture);
+                            };
+                            var onError = function () {
+                                var e = new RES.ResourceManagerError(1001, resource.url);
+                                reject(e);
+                            };
+                            loader.addEventListener(egret.Event.COMPLETE, onSuccess, _this);
+                            loader.addEventListener(egret.IOErrorEvent.IO_ERROR, onError, _this);
+                        })];
                 });
             });
         }
         function getURL(resource) {
+            if (resource.url.indexOf("://") != -1) {
+                return resource.url;
+            }
             var prefix = resource.extra ? "" : RES.resourceRoot;
             var url = prefix + resource.url;
             if (RES['getRealURL']) {
@@ -663,6 +900,9 @@ var RES;
             }
         }
         function getRelativePath(url, file) {
+            if (file.indexOf("://") != -1) {
+                return file;
+            }
             url = url.split("\\").join("/");
             var params = url.match(/#.*|\?.*/);
             var paramUrl = "";
@@ -683,7 +923,7 @@ var RES;
         processor_1.ImageProcessor = {
             onLoadStart: function (host, resource) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var loader, bitmapData, texture;
+                    var loader, bitmapData, texture, r, list;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -694,11 +934,14 @@ var RES;
                                 bitmapData = _a.sent();
                                 texture = new egret.Texture();
                                 texture._setBitmapData(bitmapData);
+                                r = host.resourceConfig.getResource(resource.name);
+                                if (r && r.scale9grid) {
+                                    list = r.scale9grid.split(",");
+                                    texture["scale9Grid"] = new egret.Rectangle(parseInt(list[0]), parseInt(list[1]), parseInt(list[2]), parseInt(list[3]));
+                                }
                                 // var config: any = resItem.data;
                                 // if (config && config["scale9grid"]) {
-                                //     var str: string = config["scale9grid"];
-                                //     var list: Array<string> = str.split(",");
-                                //     texture["scale9Grid"] = new egret.Rectangle(parseInt(list[0]), parseInt(list[1]), parseInt(list[2]), parseInt(list[3]));
+                                //     
                                 // }
                                 return [2 /*return*/, texture];
                         }
@@ -763,7 +1006,7 @@ var RES;
                     var text, data;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, host.load(resource, processor_1.TextProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, 'text')];
                             case 1:
                                 text = _a.sent();
                                 data = JSON.parse(text);
@@ -782,7 +1025,7 @@ var RES;
                     var text, data;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, host.load(resource, processor_1.TextProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, 'text')];
                             case 1:
                                 text = _a.sent();
                                 data = egret.XML.parse(text);
@@ -801,7 +1044,7 @@ var RES;
                     var text, f, require, exports;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, host.load(resource, processor_1.TextProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, 'text')];
                             case 1:
                                 text = _a.sent();
                                 f = new Function('require', 'exports', text);
@@ -828,10 +1071,10 @@ var RES;
                     var data, imagePath, r, texture, frames, spriteSheet, subkey, config, texture;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, host.load(resource, processor_1.JsonProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, "json")];
                             case 1:
                                 data = _a.sent();
-                                imagePath = "resource/" + getRelativePath(resource.url, data.file);
+                                imagePath = RES.config.resourceRoot + "/" + getRelativePath(resource.url, data.file);
                                 r = host.resourceConfig.getResource(data.file);
                                 if (!r) {
                                     r = { name: imagePath, url: imagePath, extra: true, type: 'image' };
@@ -841,6 +1084,7 @@ var RES;
                                 texture = _a.sent();
                                 frames = data.frames;
                                 spriteSheet = new egret.SpriteSheet(texture);
+                                spriteSheet["$resourceInfo"] = r;
                                 for (subkey in frames) {
                                     config = frames[subkey];
                                     texture = spriteSheet.createTexture(subkey, config.x, config.y, config.w, config.h, config.offX, config.offY, config.sourceW, config.sourceH);
@@ -853,6 +1097,8 @@ var RES;
                                     //         this.addSubkey(subkey, name);
                                     //     }
                                 }
+                                // todo refactor
+                                host.save(r, texture);
                                 return [2 /*return*/, spriteSheet];
                         }
                     });
@@ -869,63 +1115,74 @@ var RES;
                 }
             },
             onRemoveStart: function (host, resource) {
+                var sheet = host.get(resource);
+                var r = sheet["$resourceInfo"];
+                host.unload(r);
                 return Promise.resolve();
             }
+        };
+        var fontGetTexturePath = function (url, fntText) {
+            var file = "";
+            var lines = fntText.split("\n");
+            var pngLine = lines[2];
+            var index = pngLine.indexOf("file=\"");
+            if (index != -1) {
+                pngLine = pngLine.substring(index + 6);
+                index = pngLine.indexOf("\"");
+                file = pngLine.substring(0, index);
+            }
+            url = url.split("\\").join("/");
+            var index = url.lastIndexOf("/");
+            if (index != -1) {
+                url = url.substring(0, index + 1) + file;
+            }
+            else {
+                url = file;
+            }
+            return url;
         };
         processor_1.FontProcessor = {
             onLoadStart: function (host, resource) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var getTexturePath, data, imageUrl, config, r, texture, font;
+                    var data, config, imageFileName, r, texture, font;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0:
-                                getTexturePath = function (url, fntText) {
-                                    var file = "";
-                                    var lines = fntText.split("\n");
-                                    var pngLine = lines[2];
-                                    var index = pngLine.indexOf("file=\"");
-                                    if (index != -1) {
-                                        pngLine = pngLine.substring(index + 6);
-                                        index = pngLine.indexOf("\"");
-                                        file = pngLine.substring(0, index);
-                                    }
-                                    url = url.split("\\").join("/");
-                                    var index = url.lastIndexOf("/");
-                                    if (index != -1) {
-                                        url = url.substring(0, index + 1) + file;
-                                    }
-                                    else {
-                                        url = file;
-                                    }
-                                    return url;
-                                };
-                                return [4 /*yield*/, host.load(resource, processor_1.TextProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, 'text')];
                             case 1:
                                 data = _a.sent();
-                                imageUrl = "";
                                 try {
                                     config = JSON.parse(data);
-                                    imageUrl = resource.name.replace("fnt", "png");
                                 }
                                 catch (e) {
                                     config = data;
-                                    // imageUrl = getTexturePath(resource.name, data);
-                                    imageUrl = resource.name.replace("fnt", "png");
-                                    ;
                                 }
-                                r = host.resourceConfig.getResource(imageUrl);
-                                if (!r) return [3 /*break*/, 3];
+                                imageFileName = resource.name.replace("fnt", "png");
+                                r = host.resourceConfig.getResource(imageFileName);
+                                if (!r) {
+                                    if (typeof config === 'string') {
+                                        imageFileName = RES.config.resourceRoot + "/" + fontGetTexturePath(resource.url, config);
+                                    }
+                                    else {
+                                        imageFileName = RES.config.resourceRoot + "/" + getRelativePath(resource.url, config.file);
+                                    }
+                                    r = { name: imageFileName, url: imageFileName, extra: true, type: 'image' };
+                                }
                                 return [4 /*yield*/, host.load(r)];
                             case 2:
                                 texture = _a.sent();
                                 font = new egret.BitmapFont(texture, config);
+                                font["$resourceInfo"] = r;
+                                // todo refactor
+                                host.save(r, texture);
                                 return [2 /*return*/, font];
-                            case 3: return [2 /*return*/, null];
                         }
                     });
                 });
             },
             onRemoveStart: function (host, resource) {
+                var font = host.get(resource);
+                var r = font["$resourceInfo"];
+                host.unload(r);
                 return Promise.resolve();
             }
         };
@@ -954,22 +1211,22 @@ var RES;
             onLoadStart: function (host, resource) {
                 var mcData;
                 var imageResource;
-                return host.load(resource, processor_1.JsonProcessor)
+                return host.load(resource, 'json')
                     .then(function (value) {
-                        mcData = value;
-                        var jsonPath = resource.name;
-                        var imagePath = jsonPath.substring(0, jsonPath.lastIndexOf(".")) + ".png";
-                        imageResource = host.resourceConfig.getResource(imagePath, true);
-                        if (!imageResource) {
-                            throw new RES.ResourceManagerError(1001, imagePath);
-                        }
-                        return host.load(imageResource);
-                    }).then(function (value) {
-                        host.save(imageResource, value);
-                        var mcTexture = value;
-                        var mcDataFactory = new egret.MovieClipDataFactory(mcData, mcTexture);
-                        return mcDataFactory;
-                    });
+                    mcData = value;
+                    var jsonPath = resource.name;
+                    var imagePath = jsonPath.substring(0, jsonPath.lastIndexOf(".")) + ".png";
+                    imageResource = host.resourceConfig.getResource(imagePath, true);
+                    if (!imageResource) {
+                        throw new RES.ResourceManagerError(1001, imagePath);
+                    }
+                    return host.load(imageResource);
+                }).then(function (value) {
+                    host.save(imageResource, value);
+                    var mcTexture = value;
+                    var mcDataFactory = new egret.MovieClipDataFactory(mcData, mcTexture);
+                    return mcDataFactory;
+                });
             },
             onRemoveStart: function (host, resource) {
                 var mcFactory = host.get(resource);
@@ -988,7 +1245,7 @@ var RES;
                     var data, key;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, host.load(resource, processor_1.JsonProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, 'json')];
                             case 1:
                                 data = _a.sent();
                                 for (key in data) {
@@ -1019,7 +1276,7 @@ var RES;
                     var data, fileSystem;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, host.load(resource, processor_1.CommonJSProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, 'commonjs')];
                             case 1:
                                 data = _a.sent();
                                 fileSystem = new RES.NewFileSystem(data.resources);
@@ -1042,7 +1299,7 @@ var RES;
         };
         processor_1.LegacyResourceConfigProcessor = {
             onLoadStart: function (host, resource) {
-                return host.load(resource, processor_1.JsonProcessor).then(function (data) {
+                return host.load(resource, 'json').then(function (data) {
                     var resConfigData = RES.config.config;
                     var fileSystem = resConfigData.fileSystem;
                     if (!fileSystem) {
@@ -1069,28 +1326,27 @@ var RES;
                     }
                     var alias = resConfigData.alias;
                     var fsData = fileSystem['fsData'];
-                    var _loop_1 = function (resource_1) {
+                    var _loop_2 = function (resource_1) {
                         fsData[resource_1.name] = resource_1;
                         if (resource_1.subkeys) {
                             resource_1.subkeys.split(",").forEach(function (subkey) {
                                 alias[subkey] = resource_1.name + "#" + subkey;
+                                alias[resource_1.name + "." + subkey] = resource_1.name + "#" + subkey;
                             });
                             // ResourceConfig.
                         }
                     };
                     for (var _b = 0, _c = data.resources; _b < _c.length; _b++) {
                         var resource_1 = _c[_b];
-                        _loop_1(resource_1);
+                        _loop_2(resource_1);
                     }
                     return resConfigData;
                 });
             },
             onRemoveStart: function () {
-                return __awaiter(this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        return [2 /*return*/];
-                    });
-                });
+                return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
+                    return [2 /*return*/];
+                }); });
             }
         };
         var PVRParser = (function () {
@@ -1155,19 +1411,19 @@ var RES;
                 var bpp, format;
                 var pixelFormat = header[2];
                 switch (pixelFormat) {
-                    case 0:
+                    case 0:// PVRTC 2bpp RGB
                         bpp = 2;
                         format = PVRParser.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
                         break;
-                    case 1:
+                    case 1:// PVRTC 2bpp RGBA
                         bpp = 2;
                         format = PVRParser.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
                         break;
-                    case 2:
+                    case 2:// PVRTC 4bpp RGB
                         bpp = 4;
                         format = PVRParser.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
                         break;
-                    case 3:
+                    case 3:// PVRTC 4bpp RGBA
                         bpp = 4;
                         format = PVRParser.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
                         break;
@@ -1186,12 +1442,13 @@ var RES;
                 pvrDatas.isCubemap = (pvrDatas.surfacesCount === 6);
                 callback(pvrDatas);
             };
+            PVRParser.COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 0x8C00;
+            PVRParser.COMPRESSED_RGB_PVRTC_2BPPV1_IMG = 0x8C01;
+            PVRParser.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 0x8C02;
+            PVRParser.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = 0x8C03;
             return PVRParser;
         }());
-        PVRParser.COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 0x8C00;
-        PVRParser.COMPRESSED_RGB_PVRTC_2BPPV1_IMG = 0x8C01;
-        PVRParser.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 0x8C02;
-        PVRParser.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = 0x8C03;
+        __reflect(PVRParser.prototype, "PVRParser");
         if (typeof egret != 'undefined' && egret && egret["web"] && egret["web"].WebGLRenderContext) {
             // Calcualates the size of a compressed texture level in bytes
             function textureLevelSize(format, width, height) {
@@ -1243,7 +1500,7 @@ var RES;
                     var arraybuffer, width, height, borderWidth, borderHeight, byteArray, list, pvrDataBuffer, i, buffer, dataLength, self, texture;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, host.load(resource, processor_1.BinaryProcessor)];
+                            case 0: return [4 /*yield*/, host.load(resource, 'bin')];
                             case 1:
                                 arraybuffer = _a.sent();
                                 width = 512;
@@ -1290,7 +1547,7 @@ var RES;
                 return Promise.resolve();
             }
         };
-        var _map = {
+        processor_1._map = {
             "image": processor_1.ImageProcessor,
             "json": processor_1.JsonProcessor,
             "text": processor_1.TextProcessor,
@@ -1445,87 +1702,88 @@ var RES;
             egret.Event.release(event);
             return result;
         };
+        /**
+         * Failure event for a load item.
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language en_US
+         */
+        /**
+         * 一个加载项加载失败事件。
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language zh_CN
+         */
+        ResourceEvent.ITEM_LOAD_ERROR = "itemLoadError";
+        /**
+         * Configure file to load and parse the completion event. Note: if a configuration file is loaded, it will not be thrown out, and if you want to handle the configuration loading failure, monitor the CONFIG_LOAD_ERROR event.
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language en_US
+         */
+        /**
+         * 配置文件加载并解析完成事件。注意：若有配置文件加载失败，将不会抛出此事件，若要处理配置加载失败，请同时监听 CONFIG_LOAD_ERROR 事件。
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language zh_CN
+         */
+        ResourceEvent.CONFIG_COMPLETE = "configComplete";
+        /**
+         * Configuration file failed to load.
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language en_US
+         */
+        /**
+         * 配置文件加载失败事件。
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language zh_CN
+         */
+        ResourceEvent.CONFIG_LOAD_ERROR = "configLoadError";
+        /**
+         * Delay load group resource loading progress event.
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language en_US
+         */
+        /**
+         * 延迟加载组资源加载进度事件。
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language zh_CN
+         */
+        ResourceEvent.GROUP_PROGRESS = "groupProgress";
+        /**
+         * Delay load group resource to complete event. Note: if you have a resource item loading failure, the event will not be thrown, if you want to handle the group load failure, please listen to the GROUP_LOAD_ERROR event.
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language en_US
+         */
+        /**
+         * 延迟加载组资源加载完成事件。注意：若组内有资源项加载失败，将不会抛出此事件，若要处理组加载失败，请同时监听 GROUP_LOAD_ERROR 事件。
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language zh_CN
+         */
+        ResourceEvent.GROUP_COMPLETE = "groupComplete";
+        /**
+         * Delayed load group resource failed event.
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language en_US
+         */
+        /**
+         * 延迟加载组资源加载失败事件。
+         * @version Egret 2.4
+         * @platform Web,Native
+         * @language zh_CN
+         */
+        ResourceEvent.GROUP_LOAD_ERROR = "groupLoadError";
         return ResourceEvent;
     }(egret.Event));
-    /**
-     * Failure event for a load item.
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language en_US
-     */
-    /**
-     * 一个加载项加载失败事件。
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language zh_CN
-     */
-    ResourceEvent.ITEM_LOAD_ERROR = "itemLoadError";
-    /**
-     * Configure file to load and parse the completion event. Note: if a configuration file is loaded, it will not be thrown out, and if you want to handle the configuration loading failure, monitor the CONFIG_LOAD_ERROR event.
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language en_US
-     */
-    /**
-     * 配置文件加载并解析完成事件。注意：若有配置文件加载失败，将不会抛出此事件，若要处理配置加载失败，请同时监听 CONFIG_LOAD_ERROR 事件。
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language zh_CN
-     */
-    ResourceEvent.CONFIG_COMPLETE = "configComplete";
-    /**
-     * Configuration file failed to load.
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language en_US
-     */
-    /**
-     * 配置文件加载失败事件。
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language zh_CN
-     */
-    ResourceEvent.CONFIG_LOAD_ERROR = "configLoadError";
-    /**
-     * Delay load group resource loading progress event.
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language en_US
-     */
-    /**
-     * 延迟加载组资源加载进度事件。
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language zh_CN
-     */
-    ResourceEvent.GROUP_PROGRESS = "groupProgress";
-    /**
-     * Delay load group resource to complete event. Note: if you have a resource item loading failure, the event will not be thrown, if you want to handle the group load failure, please listen to the GROUP_LOAD_ERROR event.
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language en_US
-     */
-    /**
-     * 延迟加载组资源加载完成事件。注意：若组内有资源项加载失败，将不会抛出此事件，若要处理组加载失败，请同时监听 GROUP_LOAD_ERROR 事件。
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language zh_CN
-     */
-    ResourceEvent.GROUP_COMPLETE = "groupComplete";
-    /**
-     * Delayed load group resource failed event.
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language en_US
-     */
-    /**
-     * 延迟加载组资源加载失败事件。
-     * @version Egret 2.4
-     * @platform Web,Native
-     * @language zh_CN
-     */
-    ResourceEvent.GROUP_LOAD_ERROR = "groupLoadError";
     RES.ResourceEvent = ResourceEvent;
+    __reflect(ResourceEvent.prototype, "RES.ResourceEvent");
 })(RES || (RES = {}));
 //////////////////////////////////////////////////////////////////////////////////////
 //
@@ -1676,7 +1934,7 @@ var RES;
          */
         ResourceItem.TYPE_SOUND = "sound";
         function convertToResItem(r) {
-            var name = "";
+            var name = r.name;
             if (!RES.config.config) {
                 name = r.url;
             }
@@ -1697,40 +1955,6 @@ var RES;
         }
         ResourceItem.convertToResItem = convertToResItem;
     })(ResourceItem = RES.ResourceItem || (RES.ResourceItem = {}));
-})(RES || (RES = {}));
-var RES;
-(function (RES) {
-    RES.checkNull = function (target, propertyKey, descriptor) {
-        var method = descriptor.value;
-        descriptor.value = function () {
-            var arg = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                arg[_i] = arguments[_i];
-            }
-            if (!arg[0]) {
-                console.warn("\u65B9\u6CD5" + propertyKey + "\u7684\u53C2\u6570\u4E0D\u80FD\u4E3Anull");
-                return null;
-            }
-            else {
-                return method.apply(this, arg);
-            }
-        };
-    };
-    /**
-     * 功能开关
-     *  LOADING_STATE：处理重复加载
-     */
-    RES.FEATURE_FLAG = {
-        FIX_DUPLICATE_LOAD: 1
-    };
-    var upgrade;
-    (function (upgrade) {
-        var _level = "warning";
-        function setUpgradeGuideLevel(level) {
-            _level = level;
-        }
-        upgrade.setUpgradeGuideLevel = setUpgradeGuideLevel;
-    })(upgrade = RES.upgrade || (RES.upgrade = {}));
 })(RES || (RES = {}));
 var RES;
 (function (RES) {
@@ -1844,6 +2068,7 @@ var RES;
         }
         if (!instance)
             instance = new Resource();
+        RES.config.resourceRoot = resourceRoot;
         return instance.loadConfig();
     }
     RES.loadConfig = loadConfig;
@@ -2253,21 +2478,28 @@ var RES;
             return this._loadGroup(name, priority, reporterDelegate).then(function (data) {
                 RES.ResourceEvent.dispatchResourceEvent(_this, RES.ResourceEvent.GROUP_COMPLETE, name);
             }, function (error) {
+                var itemList = error.itemList;
+                var length = itemList.length;
+                for (var i = 0; i < length; i++) {
+                    var item = itemList[i];
+                    delete item.promise;
+                    RES.ResourceEvent.dispatchResourceEvent(_this, RES.ResourceEvent.ITEM_LOAD_ERROR, name, item);
+                }
                 RES.ResourceEvent.dispatchResourceEvent(_this, RES.ResourceEvent.GROUP_LOAD_ERROR, name);
-                return Promise.reject(error);
+                return Promise.reject(error.error);
             });
         };
         Resource.prototype._loadGroup = function (name, priority, reporter) {
             if (priority === void 0) { priority = 0; }
             var resources = RES.config.getGroupByName(name, true);
-            return RES.queue.load(resources, reporter);
+            return RES.queue.load(resources, name, priority, reporter);
         };
         Resource.prototype.loadResources = function (keys, reporter) {
             var resources = keys.map(function (key) {
                 var r = RES.config.getResourceWithSubkey(key, true);
                 return r.r;
             });
-            return RES.queue.load(resources, reporter);
+            return RES.queue.load(resources, "name", 0, reporter);
         };
         /**
          * 创建自定义的加载资源组,注意：此方法仅在资源配置文件加载完成后执行才有效。
@@ -2418,7 +2650,7 @@ var RES;
             if (thread < 1) {
                 thread = 1;
             }
-            //todo
+            RES.queue.thread = thread;
         };
         /**
          * 设置资源加载失败时的重试次数。
@@ -2426,34 +2658,35 @@ var RES;
          */
         Resource.prototype.setMaxRetryTimes = function (retry) {
             retry = Math.max(retry, 0);
-            //todo
+            RES.queue.maxRetryTimes = retry;
         };
         Resource.prototype.addResourceData = function (data) {
             RES.config.addResourceData(data);
         };
+        __decorate([
+            RES.checkCancelation
+        ], Resource.prototype, "loadConfig", null);
+        __decorate([
+            RES.checkCancelation
+        ], Resource.prototype, "_loadGroup", null);
+        __decorate([
+            RES.checkNull
+        ], Resource.prototype, "hasRes", null);
+        __decorate([
+            RES.checkNull
+        ], Resource.prototype, "getRes", null);
+        __decorate([
+            RES.checkNull,
+            RES.checkCancelation
+        ], Resource.prototype, "getResAsync", null);
+        __decorate([
+            RES.checkNull,
+            RES.checkCancelation
+        ], Resource.prototype, "getResByUrl", null);
         return Resource;
     }(egret.EventDispatcher));
-    __decorate([
-        RES.checkCancelation
-    ], Resource.prototype, "loadConfig", null);
-    __decorate([
-        RES.checkCancelation
-    ], Resource.prototype, "_loadGroup", null);
-    __decorate([
-        RES.checkNull
-    ], Resource.prototype, "hasRes", null);
-    __decorate([
-        RES.checkNull
-    ], Resource.prototype, "getRes", null);
-    __decorate([
-        RES.checkNull,
-        RES.checkCancelation
-    ], Resource.prototype, "getResAsync", null);
-    __decorate([
-        RES.checkNull,
-        RES.checkCancelation
-    ], Resource.prototype, "getResByUrl", null);
     RES.Resource = Resource;
+    __reflect(Resource.prototype, "RES.Resource");
     /**
      * Resource单例
      */
