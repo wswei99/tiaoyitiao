@@ -8,32 +8,38 @@ var __extends = this && this.__extends || function __extends(t, e) {
 for (var i in e) e.hasOwnProperty(i) && (t[i] = e[i]);
 r.prototype = e.prototype, t.prototype = new r();
 };
-var SceneManger = (function (_super) {
-    __extends(SceneManger, _super);
-    function SceneManger() {
+var SceneMange = (function (_super) {
+    __extends(SceneMange, _super);
+    function SceneMange() {
         var _this = _super.call(this) || this;
         _this.init();
         return _this;
     }
-    SceneManger.prototype.init = function () {
+    SceneMange.prototype.init = function () {
         // 实例化两个场景
-        this.menuScene = new MenuScene();
+        this.beginScene = new BeginScene();
         this.gameScene = new GameScene();
         // 默认添加开始场景
-        this.addChild(this.menuScene);
+        this.addChild(this.beginScene);
     };
     // 实例化单例获取方法
-    SceneManger.getInstance = function () {
-        if (!SceneManger.instance) {
-            SceneManger.instance = new SceneManger();
+    SceneMange.getInstance = function () {
+        if (!SceneMange.instance) {
+            SceneMange.instance = new SceneMange();
         }
-        return SceneManger.instance;
+        return SceneMange.instance;
     };
     // 切换场景
-    SceneManger.prototype.changeScene = function (type) {
+    SceneMange.prototype.changeScene = function (type) {
+        // 释放资源
+        if (type == 'gameScene') {
+            this.beginScene.release();
+        }
+        // 移除所有显示列表中的对象
         this.removeChildren();
+        // 添加下一个场景
         this.addChild(this[type]);
     };
-    return SceneManger;
+    return SceneMange;
 }(egret.Sprite));
-__reflect(SceneManger.prototype, "SceneManger");
+__reflect(SceneMange.prototype, "SceneMange");

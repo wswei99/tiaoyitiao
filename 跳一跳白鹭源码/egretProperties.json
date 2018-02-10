@@ -1,10 +1,10 @@
 {
   "engineVersion": "5.1.5",
   "compilerVersion": "5.1.5",
+  "template": {},
   "target": {
     "current": "wxgame"
   },
-  "template": {},
   "eui": {
     "exmlRoot": [
       "resource/eui_skins"
@@ -28,10 +28,10 @@
       "name": "tween"
     },
     {
-      "name": "game"
+      "name": "promise"
     },
     {
-      "name": "promise"
+      "name": "game"
     }
   ]
 }

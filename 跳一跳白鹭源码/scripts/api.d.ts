@@ -4,14 +4,6 @@
  */
 type ResourceManagerConfig = {
     /**
-     * 配置文件生成路径
-     */
-    configPath: string,
-    /**
-     * 资源根目录路径
-     */
-    resourceRoot: () => string,
-    /**
      * 构建与发布配置
      */
     buildConfig: (param: BuildConfigParam) => UserConfig,
@@ -40,7 +32,7 @@ type UserConfig = {
     /**
      * 插件
      */
-    commands: (string | plugins.Command)[]
+    commands: (string | plugins.Command) []
 }
 
 type BuildConfigParam = {
@@ -70,6 +62,24 @@ type BuildConfigParam = {
      * 项目路径
      */
     readonly projectRoot: string;
+
+    /**
+     * 项目配置
+     */
+    readonly projectConfig: ProjectConfig;
+}
+
+type ProjectConfig = {
+    entryClassName: string;
+    orientation: string;
+    frameRate: number;
+    scaleMode: string;
+    contentWidth: number;
+    contentHeight: number;
+    showFPS: boolean;
+    fpsStyles: string;
+    showLog: boolean;
+    maxTouches: number;
 }
 
 
@@ -85,7 +95,17 @@ declare namespace plugins {
         /**
          * 构建配置
          */
-        buildConfig: BuildConfigParam
+        buildConfig: BuildConfigParam;
+
+        /** 
+         * 项目绝对路径
+         */
+        projectRoot: string;
+
+        /** 
+         * 项目输出绝对路径
+         */
+        outputDir: string;
 
     }
 
@@ -198,7 +218,7 @@ declare module 'built-in' {
 
     type LibraryType = "debug" | "release";
 
-    type CompilePluginOptions = { libraryType: LibraryType };
+    type CompilePluginOptions = { libraryType: LibraryType, defines?: any };
     /**
      * 编译命令
      */
@@ -244,7 +264,12 @@ declare module 'built-in' {
 
         output: string,
 
-        hash?: "crc32"
+        hash?: "crc32",
+
+        /**
+         * 是否输出转换过程
+         */
+        verbose?: boolean
 
 
     }
@@ -290,6 +315,28 @@ declare module 'built-in' {
 
         constructor();
 
+    }
+
+    type CleanPluginOptions = {
+
+        matchers: string[]
+    }
+
+
+    export class CleanPlugin implements plugins.Command {
+        constructor(options: CleanPluginOptions);
+    }
+
+    type RenamePluginOptions = {
+
+        verbose?: boolean
+
+        hash?: "crc32"
+
+        matchers: { from: string, to: string }[]
+    }
+    export class RenamePlugin implements plugins.Command {
+        constructor(options: RenamePluginOptions);
     }
 
 }
