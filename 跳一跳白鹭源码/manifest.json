@@ -16,7 +16,6 @@
 		"bin-debug/SceneManage.js",
 		"bin-debug/ThemeAdapter.js",
 		"bin-debug/scene/BeginScene.js",
-		"bin-debug/scene/GameScene.js",
-		"bin-debug/scene/Test.js"
+		"bin-debug/scene/GameScene.js"
 	]
 }

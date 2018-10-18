@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <e:Skin class="GameSceneSkin" width="640" height="1136" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing" >
 	<w:Config id="1616fab207f" ></w:Config>
+	<e:Image left="0" right="0" top="0" bottom="0" source="bg_jpg"/>
 	<e:Group id="blockPanel" left="0" right="0" top="0" bottom="0">
-		<e:Image left="0" right="0" top="0" bottom="0" source="bg_jpg"/>
 		<e:Image id="player" width="48" height="130" x="192" y="448" source="piece_png"/>
 		<e:Label id="scoreLabel" text="0" x="100" y="100" textColor="0x070303" size="90"/>
 	</e:Group>

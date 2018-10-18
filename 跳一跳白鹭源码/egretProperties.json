@@ -1,9 +1,9 @@
 {
-  "engineVersion": "5.1.5",
-  "compilerVersion": "5.1.5",
+  "engineVersion": "5.2.11",
+  "compilerVersion": "5.2.11",
   "template": {},
   "target": {
-    "current": "wxgame"
+    "current": "web"
   },
   "eui": {
     "exmlRoot": [
